@@ -396,8 +396,9 @@ var pizzaElementGenerator = function(i) {
   pizzaContainer.appendChild(pizzaDescriptionContainer);
 
   return pizzaContainer;
-};
-
+}
+//Add global variable for querySelector optimization on #pizzaSize
+ var pizzaSizeElement = document.querySelector("#pizzaSize");
 // resizePizzas(size) is called when the slider in the "Our Pizzas" section of the website moves.
 var resizePizzas = function(size) { 
   window.performance.mark("mark_start_resize");   // User Timing API function
@@ -406,13 +407,13 @@ var resizePizzas = function(size) {
   function changeSliderLabel(size) {
     switch(size) {
       case "1":
-        document.querySelector("#pizzaSize").innerHTML = "Small";
+        pizzaSizeElement.innerHTML = "Small";
         return;
       case "2":
-        document.querySelector("#pizzaSize").innerHTML = "Medium";
+        pizzaSizeElement.innerHTML = "Medium";
         return;
       case "3":
-        document.querySelector("#pizzaSize").innerHTML = "Large";
+       pizzaSizeElement.innerHTML = "Large";
         return;
       default:
         console.log("bug in changeSliderLabel");
@@ -450,10 +451,15 @@ var resizePizzas = function(size) {
 
   // Iterates through pizza elements on the page and changes their widths
   function changePizzaSizes(size) {
-    for (var i = 0; i < document.querySelectorAll(".randomPizzaContainer").length; i++) {
-      var dx = determineDx(document.querySelectorAll(".randomPizzaContainer")[i], size);
-      var newwidth = (document.querySelectorAll(".randomPizzaContainer")[i].offsetWidth + dx) + 'px';
-      document.querySelectorAll(".randomPizzaContainer")[i].style.width = newwidth;
+   // Performance Improvement: only call the querySelectorAll once
+    var randomPizzaContainerElements = document.querySelectorAll(".randomPizzaContainer");
+    // Performance Improvement: moved dx and newwidth outside of loop used zeroth element since all
+    // will return same dx and newwidth
+    var dx = determineDx(randomPizzaContainerElements[0], size);
+    var newwidth = (randomPizzaContainerElements[0].offsetWidth + dx) + 'px';
+
+    for (var i = 0; i < randomPizzaContainerElements.length; i++) {
+      randomPizzaContainerElements[i].style.width = newwidth;
     }
   }
 
@@ -506,7 +512,9 @@ function updatePositions() {
   for (var i = 0; i < items.length; i++) {
     var phase = Math.sin((document.body.scrollTop / 1250) + (i % 5));
     items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
+console.log(items.length);
   }
+
 
   // User Timing API to the rescue again. Seriously, it's worth learning.
   // Super easy to create custom metrics.
