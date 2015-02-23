@@ -478,8 +478,7 @@ window.performance.mark("mark_start_generating"); // collect timing data
 // This for-loop actually creates and appends all of the pizzas when the page loads
 //  Improvement: Moved pizzasDiv outside of for loop so it does not get called for every iteration
  var pizzasDiv = document.getElementById("randomPizzas");
-for (var i = 2; i < 100; i++) {
- 
+for (var i = 2; i < 100; i++) { 
   pizzasDiv.appendChild(pizzaElementGenerator(i));
 }
 
@@ -503,20 +502,27 @@ function logAverageFrame(times) {   // times is the array of User Timing measure
   console.log("Average time to generate last 10 frames: " + sum / 10 + "ms");
 }
 
+ //Improvement: Added pizzaMover as a global variable so it does not need to be called repeatedly
+var pizzaMover =[];
 // The following code for sliding background pizzas was pulled from Ilya's demo found at:
 // https://www.igvita.com/slides/2012/devtools-tips-and-tricks/jank-demo.html
 
 // Moves the sliding background pizzas based on scroll position
 function updatePositions() {
-  frame++;
-  window.performance.mark("mark_start_frame");
+    frame++;
+    window.performance.mark("mark_start_frame");
+    // Performance Improvement: Moved declaration of phase variable outside of loop
+    var phase;
+    // Performance Improvement: Moved scrollTop calculation outside of loop
+    var scrollTop1250 = document.body.scrollTop / 1250;
+    var newPizzaX;
 
-  var items = document.querySelectorAll('.mover');
-  for (var i = 0; i < items.length; i++) {
-    var phase = Math.sin((document.body.scrollTop / 1250) + (i % 5));
-    items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
-console.log(items.length);
-  }
+    for (var i = 0; i <  pizzaMover.length; i++) {
+      phase = Math.sin(scrollTop1250 + (i % 5));
+      newPizzaX = Math.round( pizzaMover[i].basicLeft + 100 * phase);
+      //Performance Improvement: Used style.transform instead of style.left
+      pizzaMover[i].style.transform = 'translate3d(' + newPizzaX + 'px, 0px, 0px)';
+    }
 
 
   // User Timing API to the rescue again. Seriously, it's worth learning.
@@ -536,15 +542,23 @@ window.addEventListener('scroll', updatePositions);
 document.addEventListener('DOMContentLoaded', function() {
   var cols = 8;
   var s = 256;
+  //  Improvement: moved the querySelector outside of the loop
+  var movingPizzasSelection = document.querySelector("#movingPizzas1");
+  // Set the movingPizzas1 element position to fixed  and the zIndex to -1 
+  // so using style.transform instead of style.left will display correctly
+  movingPizzasSelection.style.position = 'fixed';
+  movingPizzasSelection.style.zIndex = -1;
+
   for (var i = 0; i < 200; i++) {
     var elem = document.createElement('img');
     elem.className = 'mover';
     elem.src = "images/pizza.png";
     elem.style.height = "100px";
-    elem.style.width = "73.333px";
+    elem.style.width = "73.33px";
     elem.basicLeft = (i % cols) * s;
     elem.style.top = (Math.floor(i / cols) * s) + 'px';
-    document.querySelector("#movingPizzas1").appendChild(elem);
+    movingPizzasSelection.appendChild(elem);
   }
+  pizzaMover = document.querySelectorAll('.mover');
   updatePositions();
 });
