@@ -1,5 +1,5 @@
 var changed = require('gulp-changed');
-
+var imagemin = require('gulp-imagemin');
 //gulpfile for P4
 // include gulp
 var gulp = require('gulp'); 
@@ -77,6 +77,32 @@ gulp.task('jscripts', function() {
     .pipe(uglify())
     .pipe(gulp.dest('./build/views/js'));
 });
+
+//compress primary images
+gulp.task('imagemin', function() {
+  var imgSrc = './img/**/*',
+      imgDst = './build/img';
+ 
+  gulp.src(imgSrc)
+    .pipe(changed(imgDst))
+    .pipe(imagemin())
+    .pipe(gulp.dest(imgDst));
+});
+
+//compress secondary images
+
+gulp.task('imagemin', function() {
+  var imgSrc = './views/images/**/*',
+      imgDst = './build/views/images';
+ 
+  gulp.src(imgSrc)
+    .pipe(changed(imgDst))
+    .pipe(imagemin())
+    .pipe(gulp.dest(imgDst));
+});
+
+
+
 
 
 
