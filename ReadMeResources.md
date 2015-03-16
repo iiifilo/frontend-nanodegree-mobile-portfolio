@@ -25,6 +25,10 @@ Instructors from Udacity
 Google insight pagespeed
 
 **********************************************************************************************
+
+Build folder  should be used when scoring for pagespeed and fps.
+
+**********************************************************************************************
 The strategies used 
 1)Minify, Compress, Cache(html, css, js)
 2)Minize use of render blocking resources(used media queries, Inline css)
