@@ -520,11 +520,9 @@ function updatePositions() {
 
     for (var i = 0; i <  pizzaMover.length; i++) {
       phase = Math.sin(scrollTop1250 + (i % 5));
-      newPizzaX = Math.round( pizzaMover[i].basicLeft + 100 * phase);
-      //Performance Improvement: Used style.transform instead of style.left
-      pizzaMover[i].style.transform = 'translate3d(' + newPizzaX + 'px, 0px, 0px)';
+      newPizzaX = Math.round( pizzaMover[i].basicLeft + 100 * phase);     
+      pizzaMover[i].style.left = pizzaMover[i].basicLeft + 100 * phase + 'px';      
     }
-
 
   // User Timing API to the rescue again. Seriously, it's worth learning.
   // Super easy to create custom metrics.
@@ -547,8 +545,8 @@ document.addEventListener('DOMContentLoaded', function() {
   var movingPizzasSelection = document.querySelector("#movingPizzas1");
   // Set the movingPizzas1 element position to fixed  and the zIndex to -1 
   // so using style.transform instead of style.left will display correctly
-  movingPizzasSelection.style.position = 'fixed';
-  movingPizzasSelection.style.zIndex = -1;
+  //movingPizzasSelection.style.position = 'fixed';  
+  //movingPizzasSelection.style.zIndex = -1;
 
   for (var i = 0; i < 200; i++) {
     var elem = document.createElement('img');
@@ -558,6 +556,7 @@ document.addEventListener('DOMContentLoaded', function() {
     elem.style.width = "73.33px";
     elem.basicLeft = (i % cols) * s;
     elem.style.top = (Math.floor(i / cols) * s) + 'px';
+
     movingPizzasSelection.appendChild(elem);
   }
   pizzaMover = document.querySelectorAll('.mover');
